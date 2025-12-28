@@ -1,19 +1,19 @@
-name: SheshYT_Final_NoCrop
-on: [workflow_dispatch, push]
+name: SheshYT_Fixed_Stream
+on: [workflow_dispatch]
 
 jobs:
   stream:
     runs-on: ubuntu-latest
-    timeout-minutes: 360 # 6 Ghante
-    
+    timeout-minutes: 360
     steps:
       - name: Install FFmpeg
         run: sudo apt update && sudo apt install ffmpeg -y
 
-      - name: Start Stream
+      - name: Start Live Stream
         run: |
-          ffmpeg -re -stream_loop -1 -i "https://docs.google.com/uc?export=download&id=1QwdOVGawtEh8TeDtR27n2oDAWoDGKLRq" \
+          ffmpeg -re -stream_loop -1 \
+          -user_agent "Mozilla/5.0" \
+          -i "https://docs.google.com/uc?export=download&confirm=t&id=1QwdOVGawtEh8TeDtR27n2oDAWoDGKLRq" \
           -vf "scale=1080:-1,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,drawtext=text='SHESHYT LIVE':x=(w-text_w)/2:y=250:fontsize=50:fontcolor=yellow:box=1:boxcolor=black@0.6" \
           -c:v libx264 -preset veryfast -b:v 3000k -maxrate 3000k -bufsize 6000k \
           -pix_fmt yuv420p -g 50 -c:a aac -b:a 128k -f flv rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}
-          
