@@ -1,4 +1,4 @@
-name: SheshYT_Direct_Stream
+name: SheshYT_Final_Bypass
 on: [workflow_dispatch]
 
 jobs:
@@ -6,13 +6,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install FFmpeg
-        run: sudo apt update && sudo apt install ffmpeg -y
+        run: sudo apt update && sudo apt install ffmpeg curl -y
 
-      - name: Start Live Stream
+      - name: Start Stream with Direct Link
         run: |
-          ffmpeg -re -stream_loop -1 \
-          -headers "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" \
-          -i "https://docs.google.com/uc?export=download&id=1QwdOVGawtEh8TeDtR27n2oDAWoDGKLRq" \
+          # Is command se hum Google Drive ki security check ko bypass kar rahe hain
+          V_ID="1QwdOVGawtEh8TeDtR27n2oDAWoDGKLRq"
+          CONFIRM=$(curl -sc /tmp/cookies.txt "https://docs.google.com/uc?export=download&id=$V_ID" | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')
+          DIRECT_URL="https://docs.google.com/uc?export=download&confirm=$CONFIRM&id=$V_ID"
+
+          ffmpeg -re -stream_loop -1 -i "$DIRECT_URL" \
           -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,drawtext=text='SHESHYT LIVE':x=(w-text_w)/2:y=250:fontsize=50:fontcolor=yellow:box=1:boxcolor=black@0.6" \
           -c:v libx264 -preset veryfast -b:v 2000k -maxrate 2000k -bufsize 4000k \
           -pix_fmt yuv420p -g 50 -c:a aac -b:a 128k -f flv rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}
