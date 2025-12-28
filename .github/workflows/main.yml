@@ -1,24 +1,27 @@
-name: SheshYT_Final_Working_Stream
+name: SheshYT_Final_Fix_V3
 on: [workflow_dispatch]
 
 jobs:
   stream:
     runs-on: ubuntu-latest
-    timeout-minutes: 360 # 6 ghante ka backup
+    timeout-minutes: 360
     
     steps:
-      - name: Install FFmpeg and Wget
-        run: |
-          sudo apt update
-          sudo apt install ffmpeg wget -y
+      - name: Install Tools
+        run: sudo apt update && sudo apt install ffmpeg wget -y
 
-      - name: Download Video from Drive
+      - name: Download Video Properly
         run: |
-          wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1QwdOVGawtEh8TeDtR27n2oDAWoDGKLRq' -O video.mp4
+          # Is command se file bina error ke poori download hogi
+          wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1QwdOVGawtEh8TeDtR27n2oDAWoDGKLRq' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1QwdOVGawtEh8TeDtR27n2oDAWoDGKLRq" -O video.mp4 && rm -rf /tmp/cookies.txt
 
-      - name: Start Full Screen Stream (No Crop)
+      - name: Verify File Size
+        run: ls -lh video.mp4 # Ye check karega ki file kitne MB ki download hui hai
+
+      - name: Start Live Stream
         run: |
           ffmpeg -re -stream_loop -1 -i video.mp4 \
           -vf "scale=1080:-1,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,drawtext=text='SHESHYT LIVE':x=(w-text_w)/2:y=250:fontsize=50:fontcolor=yellow:box=1:boxcolor=black@0.6" \
-          -c:v libx264 -preset veryfast -b:v 3000k -maxrate 3000k -bufsize 6000k \
+          -c:v libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k \
           -pix_fmt yuv420p -g 50 -c:a aac -b:a 128k -f flv rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}
+          
