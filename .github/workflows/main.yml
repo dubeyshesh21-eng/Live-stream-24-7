@@ -1,27 +1,19 @@
-name: SheshYT_Final_Fix_V3
+name: SheshYT_Direct_Stream
 on: [workflow_dispatch]
 
 jobs:
   stream:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
-    
     steps:
-      - name: Install Tools
-        run: sudo apt update && sudo apt install ffmpeg wget -y
-
-      - name: Download Video Properly
-        run: |
-          # Is command se file bina error ke poori download hogi
-          wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate 'https://docs.google.com/uc?export=download&id=1QwdOVGawtEh8TeDtR27n2oDAWoDGKLRq' -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=1QwdOVGawtEh8TeDtR27n2oDAWoDGKLRq" -O video.mp4 && rm -rf /tmp/cookies.txt
-
-      - name: Verify File Size
-        run: ls -lh video.mp4 # Ye check karega ki file kitne MB ki download hui hai
+      - name: Install FFmpeg
+        run: sudo apt update && sudo apt install ffmpeg -y
 
       - name: Start Live Stream
         run: |
-          ffmpeg -re -stream_loop -1 -i video.mp4 \
-          -vf "scale=1080:-1,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,drawtext=text='SHESHYT LIVE':x=(w-text_w)/2:y=250:fontsize=50:fontcolor=yellow:box=1:boxcolor=black@0.6" \
-          -c:v libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k \
+          ffmpeg -re -stream_loop -1 \
+          -headers "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36" \
+          -i "https://docs.google.com/uc?export=download&id=1QwdOVGawtEh8TeDtR27n2oDAWoDGKLRq" \
+          -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,drawtext=text='SHESHYT LIVE':x=(w-text_w)/2:y=250:fontsize=50:fontcolor=yellow:box=1:boxcolor=black@0.6" \
+          -c:v libx264 -preset veryfast -b:v 2000k -maxrate 2000k -bufsize 4000k \
           -pix_fmt yuv420p -g 50 -c:a aac -b:a 128k -f flv rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}
           
