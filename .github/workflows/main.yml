@@ -8,10 +8,10 @@ jobs:
       - name: Install FFmpeg
         run: sudo apt update && sudo apt install ffmpeg -y
 
-      - name: Force Download Video
+      - name: Download Video
         run: |
-          # Is line se video direct GitHub ke server par aa jayegi
-          curl -L -o video.mp4 "https://www.dropbox.com/scl/fi/9msn7zvj7i27ucwvqzd3t/YouCut_20251228_120033991.mp4?rlkey=ag1xutj0levey2w7bl2k5er7o&raw=1"
+          # Is baar maine link ke end mein direct download trigger laga diya hai
+          curl -L -o video.mp4 "https://dl.dropboxusercontent.com/scl/fi/9msn7zvj7i27ucwvqzd3t/YouCut_20251228_120033991.mp4?rlkey=ag1xutj0levey2w7bl2k5er7o"
 
       - name: Start Live Stream
         run: |
@@ -19,3 +19,4 @@ jobs:
           -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,drawtext=text='SHESHYT LIVE':x=(w-text_w)/2:y=250:fontsize=50:fontcolor=yellow:box=1:boxcolor=black@0.6" \
           -c:v libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k \
           -pix_fmt yuv420p -g 50 -c:a aac -b:a 128k -f flv rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}
+          
