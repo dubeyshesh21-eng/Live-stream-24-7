@@ -1,8 +1,5 @@
-name: SheshYT_24_7_Live
-on: 
-  workflow_dispatch:
-  schedule:
-    - cron: '0 */6 * * *' # Ye har 6 ghante mein apne aap restart hoga taaki stream chalti rahe
+name: SheshYT_Fixed_Live
+on: [workflow_dispatch]
 
 jobs:
   stream:
@@ -11,9 +8,13 @@ jobs:
       - name: Install FFmpeg
         run: sudo apt update && sudo apt install ffmpeg -y
 
-      - name: Start Continuous Stream
+      - name: Download Video from Dropbox
         run: |
-          ffmpeg -re -stream_loop -1 -i "https://www.dropbox.com/scl/fi/9msn7zvj7i27ucwvqzd3t/YouCut_20251228_120033991.mp4?rlkey=ag1xutj0levey2w7bl2k5er7o&st=7t3lxcme&dl=1" \
+          wget -O video.mp4 "https://www.dropbox.com/scl/fi/9msn7zvj7i27ucwvqzd3t/YouCut_20251228_120033991.mp4?rlkey=ag1xutj0levey2w7bl2k5er7o&st=7t3lxcme&dl=1"
+
+      - name: Start Live Stream
+        run: |
+          ffmpeg -re -stream_loop -1 -i video.mp4 \
           -vf "scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,drawtext=text='SHESHYT LIVE':x=(w-text_w)/2:y=250:fontsize=50:fontcolor=yellow:box=1:boxcolor=black@0.6" \
           -c:v libx264 -preset veryfast -b:v 2500k -maxrate 2500k -bufsize 5000k \
           -pix_fmt yuv420p -g 50 -c:a aac -b:a 128k -f flv rtmp://a.rtmp.youtube.com/live2/${{ secrets.STREAM_KEY }}
