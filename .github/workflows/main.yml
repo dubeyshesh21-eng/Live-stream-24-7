@@ -1,4 +1,4 @@
-name: SheshYT_Fixed_Live
+name: SheshYT_Confirm_Live
 on: [workflow_dispatch]
 
 jobs:
@@ -8,9 +8,9 @@ jobs:
       - name: Install FFmpeg
         run: sudo apt update && sudo apt install ffmpeg -y
 
-      - name: Download Video from Dropbox
+      - name: Download Video Properly
         run: |
-          wget -O video.mp4 "https://www.dropbox.com/scl/fi/9msn7zvj7i27ucwvqzd3t/YouCut_20251228_120033991.mp4?rlkey=ag1xutj0levey2w7bl2k5er7o&st=7t3lxcme&dl=1"
+          curl -L -o video.mp4 "https://www.dropbox.com/scl/fi/9msn7zvj7i27ucwvqzd3t/YouCut_20251228_120033991.mp4?rlkey=ag1xutj0levey2w7bl2k5er7o&st=7t3lxcme&dl=1"
 
       - name: Start Live Stream
         run: |
