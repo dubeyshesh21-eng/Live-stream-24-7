@@ -1,4 +1,4 @@
-name: SheshYT_Confirm_Live
+name: SheshYT_Final_Working
 on: [workflow_dispatch]
 
 jobs:
@@ -8,9 +8,10 @@ jobs:
       - name: Install FFmpeg
         run: sudo apt update && sudo apt install ffmpeg -y
 
-      - name: Download Video Properly
+      - name: Force Download Video
         run: |
-          curl -L -o video.mp4 "https://www.dropbox.com/scl/fi/9msn7zvj7i27ucwvqzd3t/YouCut_20251228_120033991.mp4?rlkey=ag1xutj0levey2w7bl2k5er7o&st=7t3lxcme&dl=1"
+          # Is line se video direct GitHub ke server par aa jayegi
+          curl -L -o video.mp4 "https://www.dropbox.com/scl/fi/9msn7zvj7i27ucwvqzd3t/YouCut_20251228_120033991.mp4?rlkey=ag1xutj0levey2w7bl2k5er7o&raw=1"
 
       - name: Start Live Stream
         run: |
